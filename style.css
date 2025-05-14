@@ -13,5 +13,5 @@ body {
     margin-top: 10px;
     max-width: 100%;
     border: 1px solid #ccc;
-    display: none;          /* hide until we have an image */
+    display: none;         
   }
