@@ -4,6 +4,23 @@
     "description": "Presentation Assistant",
     "manifest_version": 3,
     "author": "Jasmine, Gabe",
+
+    "permissions": [
+        "activeTab",
+        "contextMenus",
+        "storage"
+      ],
+      "optional_permissions": [
+        "topSites"
+      ],
+      "host_permissions": [
+        "https://www.developer.chrome.com/*"
+      ],
+      "optional_host_permissions":[
+        "https://*/*",
+        "http://*/*"
+      ],
+
     "action":{
         "default_popup": "index.html",
         "default_title": "Pres2"
