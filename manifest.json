@@ -1,0 +1,11 @@
+{
+    "name": "Pres2",
+    "version": "1.0.0",
+    "description": "Presentation Assistant",
+    "manifest_version": 3,
+    "author": "Jasmine, Gabe",
+    "action":{
+        "default_popup": "index.html",
+        "default_title": "Pres2"
+    }
+}
