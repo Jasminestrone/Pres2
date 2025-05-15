@@ -10,7 +10,8 @@
         "contextMenus",
         "storage",
         "activeTab",
-        "tabs"
+        "tabs",
+        "scipting"
     ],
     "optional_permissions": [
         "topSites"
@@ -19,14 +20,15 @@
             "http://*/*",
             "https://*/*"
     ],
-    
-
     "action": {
-      "default_popup": "index.html"
+      "default_popup": "index.html",
+      "default_title": "Pres2"
     },
-
     "background": {
     "service_worker": "background.js"
+    },
+    "icons": {
+      "512": "icons/icon.png"
     }
 
 }
