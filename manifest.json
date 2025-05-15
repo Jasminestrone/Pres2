@@ -8,22 +8,27 @@
     "permissions": [
         "activeTab",
         "contextMenus",
-        "storage"
-      ],
-      "optional_permissions": [
+        "storage",
+        "activeTab",
+        "tabs"
+    ],
+    "optional_permissions": [
         "topSites"
-      ],
-      "host_permissions": [
-        "https://www.developer.chrome.com/*"
-      ],
-      "optional_host_permissions":[
-        "https://*/*",
-        "http://*/*"
-      ],
+    ],
+    "host_permissions": [
+            "http://*/*",
+            "https://*/*"
+    ],
+    
 
     "action": {
       "default_popup": "index.html"
+    },
+
+    "background": {
+    "service_worker": "background.js"
     }
+
 }
 
   
