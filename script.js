@@ -1,12 +1,12 @@
-function onCaptured(imageUri) {
-    console.log(imageUri);
-  }
-  
-  function onError(error) {
-    console.log(`Error: ${error}`);
-  }
-  
-  browser.browserAction.onClicked.addListener(() => {
-    let capturing = browser.tabs.captureVisibleTab();
-    capturing.then(onCaptured, onError);
+document.getElementById('captureButton').addEventListener('click', () => {
+    chrome.runtime.sendMessage({ action: "capture_tab" }, (response) => {
+      if (response && response.dataUrl) {
+        const img = document.getElementById('capturedImage');
+        img.src = response.dataUrl;
+        img.style.display = "block";
+      } else {
+        console.error("Failed to capture tab.");
+      }
+    });
   });
+  
