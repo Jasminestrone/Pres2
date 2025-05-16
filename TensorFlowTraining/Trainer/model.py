@@ -1,40 +1,12 @@
-import tensorflow as tf
-import numpy as np
-import tensorflow as tf
+from ultralytics import YOLO
 
+# Load a model (YOLOv8n is the smallest; you can also try yolov8s, yolov8m, etc.)
+model = YOLO("yolov8n.pt")  # or yolov8s.pt, yolov8m.pt, etc.
 
-
-
-# Sample data
-X = np.array([[1, 2], [3, 4], [5, 6]])
-y = np.array([3, 7, 11])
-
-# Model definition
-model = tf.keras.Sequential([
-    tf.keras.layers.Dense(1, input_shape=(2,))
-])
-
-# Model compilation
-model.compile(optimizer='sgd', loss='mse')
-
-# Model training
-model.fit(X, y, epochs=10)
-
-# Model evaluation
-loss = model.evaluate(X, y)
-print('Loss:', loss)
-
-# Prediction
-X_new = np.array([[7, 8]])
-y_pred = model.predict(X_new)
-print('Prediction:', y_pred)
-
-# Save model
-model.save('my_model')
-
-# Load model
-loaded_model = tf.keras.models.load_model('my_model')
-
-# Prediction with loaded model
-y_pred_loaded = loaded_model.predict(X_new)
-print('Prediction with loaded model:', y_pred_loaded)
+# Train the model
+model.train(
+    data="/Users/gabemurray/Documents/GitHub/Pres2/TensorFlowTraining/Data/data.yaml",  # path to your dataset YAML (Roboflow should generate this)
+    epochs=50,
+    imgsz=640,
+    batch=16
+)

@@ -1,0 +1,13 @@
+train: ../train/images
+val: ../valid/images
+test: ../test/images
+
+nc: 3
+names: ['paragraph', 'subtitle', 'title']
+
+roboflow:
+  workspace: 4bah
+  project: slide2text-peivr
+  version: 1
+  license: CC BY 4.0
+  url: https://universe.roboflow.com/4bah/slide2text-peivr/dataset/1
