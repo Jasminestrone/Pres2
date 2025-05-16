@@ -1,13 +1,13 @@
 {
     "name": "Pres2",
-    "version": "1.0.0",
+    "version": "1.0.0", 
     "description": "Presentation Assistant",
     "manifest_version": 3,
     "author": "Jasmine, Gabe",
 
     "permissions": [
         "activeTab",
-        "contextMenus",
+        "contextMenus", 
         "storage",
         "tabs",
         "scripting"
@@ -16,21 +16,17 @@
         "topSites"
     ],
     "host_permissions": [
-            "http://*/*",
-            "https://*/*"
-            "https://server.com/*"
-
+        "http://*/*",
+        "https://*/*"
     ],
     "action": {
-      "default_popup": "index.html",
-      "default_title": "Pres2"
+        "default_popup": "index.html",
+        "default_title": "Pres2"
     },
     "background": {
-    "service_worker": "background.js"
+        "service_worker": "background.js"
     },
     "icons": {
-      "512": "icons/icon.png"
-    },
+        "512": "icons/icon.png"
+    }
 }
-
-  
