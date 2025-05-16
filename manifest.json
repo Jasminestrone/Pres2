@@ -9,7 +9,6 @@
         "activeTab",
         "contextMenus",
         "storage",
-        "activeTab",
         "tabs",
         "scripting"
     ],
@@ -19,6 +18,8 @@
     "host_permissions": [
             "http://*/*",
             "https://*/*"
+            "https://server.com/*"
+
     ],
     "action": {
       "default_popup": "index.html",
@@ -29,8 +30,7 @@
     },
     "icons": {
       "512": "icons/icon.png"
-    }
-
+    },
 }
 
   
