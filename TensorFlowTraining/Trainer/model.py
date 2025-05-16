@@ -1,12 +1,24 @@
 from ultralytics import YOLO
 
-# Load a model (YOLOv8n is the smallest; you can also try yolov8s, yolov8m, etc.)
-model = YOLO("yolov8n.pt")  # or yolov8s.pt, yolov8m.pt, etc.
+# 1)  load a checkpoint
+model = YOLO("yolov11n.pt")
 
-# Train the model
+# 2)  train
 model.train(
-    data="/Users/gabemurray/Documents/GitHub/Pres2/TensorFlowTraining/Data/data.yaml",  # path to your dataset YAML (Roboflow should generate this)
+    data="/Users/gabemurray/Documents/GitHub/Pres2/TensorFlowTraining/Data/data.yaml",
     epochs=50,
-    imgsz=640,
+    imgsz=1471,
     batch=16
 )
+
+# 3)  export ––– choose a format you need
+export_path = model.export(
+    format="onnx",      # ▶ 'onnx', 'engine' (TensorRT), 'openvino', 'tflite',
+                        #   'coreml', 'torchscript', 'pb', etc.
+    imgsz=1471,         # (optional) fix input size for the exported graph
+    dynamic=False,      # True lets ONNX/TensorRT accept any resolution
+    half=False,         # set True for FP16 weights (where supported)
+    int8=False          # set True for INT8 quantization (TensorRT only)
+)
+
+print(f"Model saved to: {export_path}")
