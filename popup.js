@@ -1,35 +1,41 @@
-document.getElementById('captureButton').addEventListener('click', () => {
-    chrome.runtime.sendMessage({ action: "capture_tab" }, (response) => {
-      if (response && response.dataUrl) {
-        const img = document.getElementById('capturedImage');
-        img.src = response.dataUrl;
-        img.style.display = "block";
-      } else {
-        console.error("Failed to capture tab.");
+document.getElementById('extract').addEventListener('click', async () => {
+  const output = document.getElementById('output');
+  output.textContent = 'Extracting…';
+
+  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+  if (!tab || !tab.id) {
+    output.textContent = '❌ Could not find a presentation tab.';
+    return;
+  }
+
+  try {
+    const results = await chrome.scripting.executeScript({
+      target: { tabId: tab.id },
+      func: () => {
+        const slides = Array.from(
+          document.querySelectorAll("div[id^='page-thumb-container-with-index-']")
+        ).map((slideEl, i) => {
+          const lines = Array.from(
+            slideEl.querySelectorAll('.item.ql-editor')
+          )
+            .map(item => item.innerText.trim())
+            .filter(Boolean);
+          return lines.length
+            ? `--- Slide ${i + 1} ---\n${lines.join('\n')}`
+            : '';
+        }).filter(Boolean);
+        return slides.join('\n\n');
       }
     });
-  });
-  
 
-// popup.js
-document.getElementById('improve').onclick = async () => {
-  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-  // 1. grab slide text
-  chrome.tabs.sendMessage(tab.id, { action: 'extractSlides' }, async (resp) => {
-    const slides = resp.text;
-    document.getElementById('output').innerText = '🧠 Thinking…';
-
-    // 2. fetch your DeepSeek R1 endpoint
-    const { apiKey } = await chrome.storage.local.get('apiKey');
-    const res = await fetch('https://your-vm.example.com/improve', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${apiKey}`
-      },
-      body: JSON.stringify({ slides })
-    });
-    const { storyline } = await res.json();
-    document.getElementById('output').innerText = storyline;
-  });
-};
+    const text = results[0]?.result || '';
+    if (!text) {
+      output.textContent = ' No slide text found—or presentation isn’t fully rendered yet.';
+    } else {
+      output.textContent = text;
+    }
+  } catch (err) {
+    console.error(err);
+    output.textContent = 'Error extracting slides. See console for details.';
+  }
+});

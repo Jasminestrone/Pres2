@@ -10,14 +10,16 @@
         "contextMenus", 
         "storage",
         "tabs",
-        "scripting"
+        "scripting",
+        "downloads"
     ],
     "optional_permissions": [
         "topSites"
     ],
     "host_permissions": [
         "http://*/*",
-        "https://*/*"
+        "https://*/*",
+        "https://cambridge.nuvustudio.com/*"
     ],
     "action": {
         "default_popup": "index.html",
