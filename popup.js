@@ -55,21 +55,30 @@ document.getElementById('extractplacement').addEventListener('click', async () =
     const results = await chrome.scripting.executeScript({
       target: { tabId: tab.id },
       func: () => {
-        return Array.from(document.querySelectorAll('p')).map((el, i) => {
-          const rect = el.getBoundingClientRect();
-          return `Paragraph ${i + 1} at [x: ${Math.round(rect.x)}, y: ${Math.round(rect.y)}, w: ${Math.round(rect.width)}, h: ${Math.round(rect.height)}]`;
-        }).join('\n');
+        const slides = Array.from(document.querySelectorAll("div[id^='page-thumb-container-with-index-']")).map((slideEl, slideIndex) => {
+          const paragraphs = Array.from(slideEl.querySelectorAll('p'));
+          const lines = paragraphs.map((pEl, pIndex) => {
+            const rect = pEl.getBoundingClientRect();
+            return `Paragraph ${pIndex + 1}:\n  Text: "${pEl.innerText.trim()}"\n  Position: [x: ${Math.round(rect.x)}, y: ${Math.round(rect.y)}, w: ${Math.round(rect.width)}, h: ${Math.round(rect.height)}]`;
+          });
+
+          return lines.length
+            ? `--- Slide ${slideIndex + 1} ---\n${lines.join('\n\n')}`
+            : '';
+        }).filter(Boolean);
+
+        return slides.join('\n\n');
       }
     });
 
     const text = results[0]?.result || '';
     if (!text) {
-      output.textContent = 'No <p> tags found or page not fully rendered.';
+      output.textContent = 'No <p> tags found—or presentation isn’t fully rendered yet.';
     } else {
       output.textContent = text;
     }
   } catch (err) {
     console.error(err);
-    output.textContent = '❌ Error extracting <p> positions. See console for details.';
+    output.textContent = '❌ Error extracting slide content. See console for details.';
   }
 });
