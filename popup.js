@@ -1,3 +1,25 @@
+// Function to send text to local AI model
+async function sendToAIModel(text) {
+  try {
+    const response = await fetch('http://localhost:5000/process', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ text: text })
+    });
+    
+    if (!response.ok) {
+      throw new Error('Failed to process text with AI model');
+    }
+    
+    const result = await response.json();
+    return result.processedText;
+  } catch (error) {
+    throw error;
+  }
+}
+
 document.getElementById('extract').addEventListener('click', async () => {
   const output = document.getElementById('output');
   output.textContent = 'Extracting...';
@@ -30,13 +52,21 @@ document.getElementById('extract').addEventListener('click', async () => {
 
     const text = results[0]?.result || '';
     if (!text) {
-      output.textContent = ' No slide text found—or presentation isn’t fully rendered yet.';
+      output.textContent = "No slide text found—or presentation isn't fully rendered yet.";
     } else {
-      output.textContent = text;
+      // Store the extracted text
+      chrome.storage.local.set({ 'extractedText': text });
+      
+      // Send to AI model
+      try {
+        const processedText = await sendToAIModel(text);
+        output.textContent = processedText;
+      } catch (error) {
+        output.textContent = 'Error processing text with AI model.';
+      }
     }
   } catch (err) {
-    console.error(err);
-    output.textContent = 'Error extracting slides. See console for details.';
+    output.textContent = 'Error extracting slides.';
   }
 });
 
@@ -78,9 +108,6 @@ document.getElementById('extractplacement').addEventListener('click', async () =
       output.textContent = text;
     }
   } catch (err) {
-    console.error(err);
-    output.textContent = 'Error extracting <p> positions. See console for details.';
-
-    
+    output.textContent = 'Error extracting <p> positions.';
   }
 });
