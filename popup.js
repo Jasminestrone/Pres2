@@ -73,7 +73,7 @@ document.getElementById('extractplacement').addEventListener('click', async () =
 
     const text = results[0]?.result || '';
     if (!text) {
-      output.textContent = 'No <p> tags found—or presentation isn’t fully rendered yet.';
+      output.textContent = "No <p> tags found—or presentation isn't fully rendered yet.";
     } else {
       output.textContent = text;
     }
