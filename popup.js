@@ -80,5 +80,7 @@ document.getElementById('extractplacement').addEventListener('click', async () =
   } catch (err) {
     console.error(err);
     output.textContent = 'Error extracting <p> positions. See console for details.';
+
+    
   }
 });
