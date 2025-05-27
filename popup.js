@@ -1,10 +1,10 @@
 document.getElementById('extract').addEventListener('click', async () => {
   const output = document.getElementById('output');
-  output.textContent = 'Extracting…';
+  output.textContent = 'Extracting...';
 
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
   if (!tab || !tab.id) {
-    output.textContent = '❌ Could not find a presentation tab.';
+    output.textContent = 'Could not find a presentation tab.';
     return;
   }
 
@@ -47,7 +47,7 @@ document.getElementById('extractplacement').addEventListener('click', async () =
 
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
   if (!tab || !tab.id) {
-    output.textContent = '❌ Could not find a presentation tab.';
+    output.textContent = 'Could not find a presentation tab.';
     return;
   }
 
@@ -79,6 +79,6 @@ document.getElementById('extractplacement').addEventListener('click', async () =
     }
   } catch (err) {
     console.error(err);
-    output.textContent = '❌ Error extracting slide content. See console for details.';
+    output.textContent = 'Error extracting <p> positions. See console for details.';
   }
 });
