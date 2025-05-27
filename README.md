@@ -35,7 +35,7 @@ npm install
 ```
 
 4. Load the Chrome extension:
-   - Open Chrome and navigate to `chrome://extensions/`
+   - Open Chrome and navigate to (chrome://extensions/)[chrome://extensions/]
    - Enable "Developer mode"
    - Click "Load unpacked" and select the project directory
 
