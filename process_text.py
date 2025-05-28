@@ -19,7 +19,7 @@ def process_text(text):
         )
         
         # Prepare the prompt
-        prompt = f"""You are a presentation enhancement expert. Please improve the following presentation text storyline to make it more engaging, clear, and professional, give this feedback in a clear and consise way considering how every slide works together:
+        prompt = f"""You are a presentation enhancement expert. Please improve the following presentation text storyline to make it more engaging, clear, and professional, give this feedback in a clear and consise way considering how every slide works together. Your repsonse must be less then 50 words:
 
 Original text:
 {text}
