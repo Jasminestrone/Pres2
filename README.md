@@ -46,7 +46,7 @@ npm install
 node server.js
 ```
 
-2. The server will run on [http://localhost:5000](http://localhost:5000)
+2. The server will run on [http://localhost:5005](http://localhost:5005)
 
 ## Usage
 
