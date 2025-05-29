@@ -88,6 +88,27 @@ document.getElementById('extractplacement').addEventListener('click', async () =
 
       // ⬇️  make the injected function async and return `sorted`
       func: async () => {
+
+        function edgeDistances(el) {
+          const rect = el.getBoundingClientRect();
+        
+          // Try canvas *content*, not container
+          const canvas = document.querySelector('.canvasContainer')?.getBoundingClientRect();
+          if (!rect || !canvas) return { left: 0, right: 0, top: 0, bottom: 0 };
+        
+          // Debug to confirm values
+          console.log("Canvas bounds:", canvas);
+          console.log("Paragraph bounds:", rect);
+        
+          return {
+            left:   Math.round(rect.left - canvas.left),
+            right:  Math.round(canvas.right - rect.right),
+            top:    Math.round(rect.top - canvas.top),
+            bottom: Math.round(canvas.bottom - rect.bottom)
+          };
+        }
+        
+
         const sleep = ms => new Promise(res => setTimeout(res, ms));
 
         const pageThumbs = document.querySelectorAll('#pageThumbs .slide');
@@ -103,22 +124,25 @@ document.getElementById('extractplacement').addEventListener('click', async () =
 
           /* ---------- collect all item-containers ---------- */
           const allContainers = Array.from(
-            document.querySelectorAll('div.canvas .item-container')
+            document.querySelectorAll('div.canvas .draggable-item-container.item-type-text')
           );
+          
           console.log('[NuVu-ext] found', allContainers.length, 'item-containers in canvas');
 
           /* ---------- apply same filters ---------- */
           const containers = allContainers.filter(c => {
-            if (c.closest('#pageThumbs'))                 return false;     // thumbnail
-            const editor = c.querySelector('.ql-editor');
-            if (!editor)                                   return false;     // not text
-            if (!editor.innerText.trim())                  return false;     // empty
-            if (c.dataset.isDeleted === 'true')            return false;     // deleted
+            if (c.closest('#pageThumbs')) return false;
+            if (c.dataset.isDeleted === 'true') return false;
+          
             const st = getComputedStyle(c);
-            if (st.display === 'none' || st.visibility === 'hidden')
-                                                          return false;     // hidden
-            return true;                                                   // keep
+            if (st.display === 'none' || st.visibility === 'hidden') return false;
+          
+            const editor = c.querySelector('.ql-editor');
+            if (!editor || !editor.innerText.trim()) return false;
+          
+            return true;
           });
+          
 
           console.log('[NuVu-ext] keeping', containers.length, 'containers');
 
@@ -130,9 +154,10 @@ document.getElementById('extractplacement').addEventListener('click', async () =
               t.match(/translateX\(([-\d.]+)px\).*translateY\(([-\d.]+)px\)/) || [];
             const width  = parseFloat(item.dataset.width)  || item.offsetWidth  || 0;
             const height = parseFloat(item.dataset.height) || item.offsetHeight || 0;
+            const gap = edgeDistances(item);  
 
             const slideNum = i + 1;
-            const info = { text, x: +x, y: +y, width, height };
+            const info = { text, x:+x, y:+y, width, height, gap };  
 
             if (!slideMap.has(slideNum)) slideMap.set(slideNum, []);
             slideMap.get(slideNum).push(info);
@@ -181,8 +206,21 @@ function buildFeedback(slides) {
       });
 
       sorted.forEach((p, i) => {
-        if (p.x < 30) issues.push(`Paragraph ${i + 1} is too close to the left edge.`);
-        if (p.y < 30) issues.push(`Paragraph ${i + 1} is too close to the top edge.`);
+        const g = p.gap;          // the object we stored in step 2
+
+        console.log(`Slide ${slide} - Paragraph ${i + 1} gap:`, p.gap);
+
+        if (p.gap) {
+  
+          const g = p.gap;
+          if (g.left   < 10)  issues.push(`Paragraph ${i + 1} is too close to the left edge.`);
+          if (g.right  < 10)  issues.push(`Paragraph ${i + 1} is too close to the right edge.`);
+          if (g.top    < 10)  issues.push(`Paragraph ${i + 1} is too close to the top edge.`);
+          if (g.bottom < 10)  issues.push(`Paragraph ${i + 1} is too close to the bottom edge.`);
+        } else {
+          console.warn(' Paragraph missing gap info:', p);
+        }
+        
       });
 
       if (!issues.length) issues.push('No issues found');
