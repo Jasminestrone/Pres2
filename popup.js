@@ -74,7 +74,7 @@ document.getElementById('extract').addEventListener('click', async () => {
 // UI hook 
 document.getElementById('extractplacement').addEventListener('click', async () => {
   const output = document.getElementById('output');
-  output.textContent = 'Extracting…';
+  output.textContent = 'Extracting...';
 
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
   if (!tab?.id) {
@@ -124,8 +124,9 @@ document.getElementById('extractplacement').addEventListener('click', async () =
 
           /* ---------- collect all item-containers ---------- */
           const allContainers = Array.from(
-            document.querySelectorAll('div.canvas .draggable-item-container.item-type-text')
+            document.querySelectorAll('div.canvas .draggable-item-container.item-type-text, div.canvas .draggable-item-container.item-type-image')
           );
+          
           
           console.log('[NuVu-ext] found', allContainers.length, 'item-containers in canvas');
 
@@ -137,31 +138,42 @@ document.getElementById('extractplacement').addEventListener('click', async () =
             const st = getComputedStyle(c);
             if (st.display === 'none' || st.visibility === 'hidden') return false;
           
-            const editor = c.querySelector('.ql-editor');
-            if (!editor || !editor.innerText.trim()) return false;
+            // Only require .ql-editor text content for text blocks
+            if (c.classList.contains('item-type-text')) {
+              const editor = c.querySelector('.ql-editor');
+              if (!editor || !editor.innerText.trim()) return false;
+            }
           
             return true;
           });
+          
           
 
           console.log('[NuVu-ext] keeping', containers.length, 'containers');
 
           /* ---------- stash paragraphs for this slide ---------- */
           containers.forEach(item => {
-            const text   = item.querySelector('.ql-editor').innerText.trim();
-            const t      = item.style.transform;
+            const editor = item.querySelector('.ql-editor');
+            const isText = !!editor;
+            const text = isText ? editor.innerText.trim() : '[Image]';
+          
+            const t = item.style.transform || '';
             const [, x = '0', y = '0'] =
               t.match(/translateX\(([-\d.]+)px\).*translateY\(([-\d.]+)px\)/) || [];
+          
             const width  = parseFloat(item.dataset.width)  || item.offsetWidth  || 0;
             const height = parseFloat(item.dataset.height) || item.offsetHeight || 0;
-            const gap = edgeDistances(item);  
-
+            const gap = edgeDistances(item); // ensure this works for images too
+          
             const slideNum = i + 1;
-            const info = { text, x:+x, y:+y, width, height, gap };  
+            const type = item.dataset.itemType || 'unknown';
+            const info = { text, x:+x, y:+y, width, height, gap, type };
 
+          
             if (!slideMap.has(slideNum)) slideMap.set(slideNum, []);
             slideMap.get(slideNum).push(info);
           });
+          
         }
 
         /* ---------- return clean array back to popup ---------- */
@@ -183,48 +195,47 @@ document.getElementById('extractplacement').addEventListener('click', async () =
   }
 });
 
-
-// layout-check helper 
 function buildFeedback(slides) {
   return slides.map(({ slide, paragraphs }) => {
     const issues = [];
 
     if (!paragraphs.length) {
-      issues.push('No paragraphs found.');
+      issues.push('No content blocks found.');
     } else {
       const xs = paragraphs.map(p => p.x);
       if (Math.max(...xs) - Math.min(...xs) > 10)
-        issues.push('Paragraphs are not consistently left-aligned.');
+        issues.push('Blocks are not consistently left-aligned.');
 
+      // Sort top to bottom
       const sorted = [...paragraphs].sort((a, b) => a.y - b.y);
+
+      // Check vertical gaps
       sorted.forEach((p, i) => {
         if (i === 0) return;
         const prev = sorted[i - 1];
         const gap = p.y - (prev.y + prev.height);
-        if (gap < 8)
-          issues.push(`Paragraphs ${i} and ${i + 1} are too close (gap: ${gap.toFixed(1)} px).`);
-      });
+        if (Math.abs(gap) < 8) {
+          const typeA = prev.type === 'image' ? 'Image' : 'Paragraph';
+          const typeB = p.type === 'image' ? 'Image' : 'Paragraph';
+          issues.push(`${typeA} ${i} and ${typeB} ${i + 1} are too close (gap: ${Math.abs(gap.toFixed(1))} px).`);
 
-      sorted.forEach((p, i) => {
-        const g = p.gap;          // the object we stored in step 2
-
-        console.log(`Slide ${slide} - Paragraph ${i + 1} gap:`, p.gap);
-
-        if (p.gap) {
-  
-          const g = p.gap;
-          if (g.left   < 10)  issues.push(`Paragraph ${i + 1} is too close to the left edge.`);
-          if (g.right  < 10)  issues.push(`Paragraph ${i + 1} is too close to the right edge.`);
-          if (g.top    < 10)  issues.push(`Paragraph ${i + 1} is too close to the top edge.`);
-          if (g.bottom < 10)  issues.push(`Paragraph ${i + 1} is too close to the bottom edge.`);
-        } else {
-          console.warn(' Paragraph missing gap info:', p);
         }
-        
       });
 
-      if (!issues.length) issues.push('No issues found');
+      // Edge proximity check
+      sorted.forEach((p, i) => {
+        const g = p.gap;
+        if (!g) return;
+
+        const label = p.type === 'image' ? `Image ${i + 1}` : `Paragraph ${i + 1}`;
+        if (Math.abs(g.left)   < 10) issues.push(`${label} is too close to the left edge.`);
+        if (Math.abs(g.right) < 10) issues.push(`${label} is too close to the right edge.`);
+        if (Math.abs(g.top)    < 10) issues.push(`${label} is too close to the top edge.`);
+        if (Math.abs(g.bottom) < 10) issues.push(`${label} is too close to the bottom edge.`);
+      });
     }
+
+    if (!issues.length) issues.push('No issues found');
 
     return `
       <details style="margin-bottom: 12px;">
@@ -235,4 +246,3 @@ function buildFeedback(slides) {
       </details>`;
   }).join('');
 }
-
