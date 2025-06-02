@@ -20,6 +20,7 @@ Pres2 is a Chrome extension that helps enhance presentation content using AI-pow
 - Administrator privileges (for automated installation)
 
 ## Installation
+# If automated instilation does not work try removing all files and redoing manually
 
 ### Automated Installation (Windows)
 
