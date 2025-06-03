@@ -9,32 +9,14 @@ Pres2 is a Chrome extension that helps enhance presentation content using AI-pow
 - Real-time text processing
 - User-friendly interface
 - Context-aware suggestions
-- Multiple AI model options
 
 ## Prerequisites
 
 - Python 3.8 or higher
 - Node.js and npm
 - Chrome browser
-- Windows operating system (for automated installation)
-- Administrator privileges (for automated installation)
 
 ## Installation
-# If automated instilation does not work try removing all files and redoing manually
-
-### Automated Installation (Windows)
-
-1. Run the PowerShell installation script as Administrator:
-```powershell
-.\install.ps1
-```
-
-2. During installation, you'll be prompted to select an AI model:
-   - DeepSeek-R1-Distill-Qwen-1.5B (3.2GB)
-   - DeepSeek-R1-Distill-Qwen-7B (14GB)
-   - DeepSeek-R1-Distill-Qwen-14B (28GB)
-
-### Manual Installation
 
 1. Clone the repository:
 ```bash
@@ -76,10 +58,7 @@ node server.js
 ## Technical Details
 
 - Backend: Node.js with Express
-- AI Models:
-  - DeepSeek-R1-Distill-Qwen-1.5B (Default, 3.2GB)
-  - DeepSeek-R1-Distill-Qwen-7B (14GB)
-  - DeepSeek-R1-Distill-Qwen-14B (28GB)
+- AI Model: DeepSeek-R1-Distill-Qwen-1.5B
 - Frontend: HTML, CSS, JavaScript
 - Browser Integration: Chrome Extension API
 
