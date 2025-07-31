@@ -2,6 +2,9 @@
 
 Pres2 is a Chrome extension that helps enhance presentation content using AI-powered text processing. It provides intelligent suggestions to make presentations more engaging, clear, and professional.
 
+### **Note:**
+This extension will only work on **OUR SCHOOLS SPECIFIC WEBSITE**, this is not coded to interact with google slides or any other progoram.
+
 ## Features
 
 - AI-powered presentation text enhancement
